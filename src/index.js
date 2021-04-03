@@ -4,11 +4,11 @@ import './index.css';
 import { ThemeProvider } from 'styled-components';
 import { Provider } from 'react-redux';
 import { I18nextProvider } from 'react-i18next';
-import App from './App';
 import ColorSchema from './theme/ColorSchema';
 import Theme from './theme/Theme';
 import configureStore from './store/config/configureStore';
 import i18n from './localization/i18n';
+import Home from './pages/Home';
 
 const store = configureStore();
 
@@ -17,7 +17,7 @@ ReactDOM.render(
     <React.StrictMode>
       <Provider store={store}>
         <ThemeProvider theme={ColorSchema[Theme.LIGHT]}>
-          <App />
+          <Home />
         </ThemeProvider>
       </Provider>
     </React.StrictMode>
