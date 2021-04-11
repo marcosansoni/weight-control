@@ -1,6 +1,6 @@
 import { useTheme } from 'styled-components';
 import PropTypes from 'prop-types';
-import { Color } from '../theme/ColorSchema';
+import { Color } from '../../theme/ColorSchema';
 
 const CalendarIcon = (props) => {
   const { color, size } = props;

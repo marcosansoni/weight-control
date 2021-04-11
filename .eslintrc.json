@@ -21,6 +21,8 @@
         "react/react-in-jsx-scope": "off",
         "react/jsx-filename-extension": "off",
         "react/forbid-prop-types": "off",
+        "import/no-unresolved": "off",
+        "import/extensions": "off",
         "linebreak-style": "off"
     },
     "overrides": [

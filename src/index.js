@@ -8,7 +8,8 @@ import ColorSchema from './theme/ColorSchema';
 import Theme from './theme/Theme';
 import configureStore from './store/config/configureStore';
 import i18n from './localization/i18n';
-import Home from './pages/Home';
+import 'react-perfect-scrollbar/dist/css/styles.css';
+import Routing from './route/Routing';
 
 const store = configureStore();
 
@@ -17,7 +18,7 @@ ReactDOM.render(
     <React.StrictMode>
       <Provider store={store}>
         <ThemeProvider theme={ColorSchema[Theme.LIGHT]}>
-          <Home />
+          <Routing />
         </ThemeProvider>
       </Provider>
     </React.StrictMode>

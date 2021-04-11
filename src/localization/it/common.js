@@ -1,3 +1,3 @@
 export default {
-  example: 'Example',
+  brand: 'Weight Control',
 };

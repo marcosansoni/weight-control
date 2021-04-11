@@ -1,14 +1,17 @@
 import axios from 'axios';
+import { select } from 'redux-saga/effects';
+import sessionSelector from '../../state/common/selectors/sessionSelector';
 
 function* postData({ url, data }) {
   // Get the session used for api call
+  const { token } = yield select(sessionSelector);
 
   return yield axios(
     {
       url,
       method: 'POST',
       headers: {
-        // session
+        ...(token && { session: token }),
       },
       data,
     },

@@ -32,15 +32,26 @@ const Right = styled.div`
   align-items: flex-end;
 `;
 
+const NoValue = styled.div`
+  display: flex;
+  font-size: 16px;
+  font-weight: 400;
+  color: ${(p) => p.theme[Color.SUBTITLE]};
+  align-items: flex-end;
+  cursor: pointer;
+`;
+
 const Card = (props) => {
-  const { icon, title, value } = props;
+  const {
+    icon, title, value, onClick, placeholder,
+  } = props;
   return (
-    <Container>
+    <Container onClick={onClick}>
       <Left>
         {icon}
         <span>{title}</span>
       </Left>
-      <Right>{value}</Right>
+      {value ? (<Right>{value}</Right>) : <NoValue>{placeholder}</NoValue>}
     </Container>
   );
 };
@@ -48,13 +59,17 @@ const Card = (props) => {
 Card.propTypes = {
   icon: PropTypes.any,
   title: PropTypes.string,
+  placeholder: PropTypes.string,
   value: PropTypes.string,
+  onClick: PropTypes.func,
 };
 
 Card.defaultProps = {
   icon: undefined,
   title: undefined,
+  placeholder: undefined,
   value: undefined,
+  onClick: undefined,
 };
 
 export default Card;
