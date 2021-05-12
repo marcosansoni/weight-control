@@ -11,7 +11,7 @@ import rootReducer from './rootReducer';
 const saveState = (state) => {
   try {
     const serializedState = JSON.stringify(state);
-    localStorage.setItem('react-redux-template', serializedState);
+    localStorage.setItem('weight-control', serializedState);
   } catch {
     // ignore write errors
   }
@@ -19,7 +19,7 @@ const saveState = (state) => {
 
 const loadState = () => {
   try {
-    const serializedState = localStorage.getItem('react-redux-template');
+    const serializedState = localStorage.getItem('weight-control');
     if (serializedState === null) {
       return undefined;
     }

@@ -11,7 +11,7 @@ function* postData({ url, data }) {
       url,
       method: 'POST',
       headers: {
-        ...(token && { session: token }),
+        ...(token && { token }),
       },
       data,
     },

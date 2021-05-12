@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { Color } from '../theme/ColorSchema';
+import MediaQuerySelector from '../constants/responsive/MediaQuerySelector';
 
 const Container = styled.div`
   padding: 16px;
@@ -13,6 +14,11 @@ const Container = styled.div`
   align-items: flex-end;
   height: 112px;
   width: 280px;
+  
+  ${MediaQuerySelector.SMALL}{
+    height: auto;
+    width: 245px;
+  }
 `;
 
 const Left = styled.div`
@@ -21,6 +27,11 @@ const Left = styled.div`
   flex-direction: column;
   height: 100%;
   justify-content: space-between;
+
+  ${MediaQuerySelector.SMALL}{
+    font-size: 16px;
+    font-weight: 550;
+  }
 `;
 
 const Right = styled.div`
@@ -41,6 +52,12 @@ const NoValue = styled.div`
   cursor: pointer;
 `;
 
+const IconSpan = styled.span`
+  ${MediaQuerySelector.SMALL}{
+    display: none;
+  }
+`;
+
 const Card = (props) => {
   const {
     icon, title, value, onClick, placeholder,
@@ -48,7 +65,7 @@ const Card = (props) => {
   return (
     <Container onClick={onClick}>
       <Left>
-        {icon}
+        <IconSpan>{icon}</IconSpan>
         <span>{title}</span>
       </Left>
       {value ? (<Right>{value}</Right>) : <NoValue>{placeholder}</NoValue>}

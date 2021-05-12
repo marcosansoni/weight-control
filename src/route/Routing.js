@@ -17,37 +17,17 @@ const Page = styled.div`
 const Routing = () => {
   const session = useSession();
 
-  console.log(session);
-
   return (
     <Page>
       <BrowserRouter>
         {!session.isValid && (<Redirect to={Routes.AUTHENTICATION.LOGIN} />)}
-        {/* <Route exact path={Routes.AUTHENTICATION.LOGOUT}> */}
-        {/*  <Logout /> */}
-        {/* </Route> */}
-        {/* <Route exact path={Routes.AUTHENTICATION.LOGIN}> */}
-        {/*  <Login /> */}
-        {/* </Route> */}
-        {/* <Route exact path={Routes.AUTHENTICATION.REGISTER}> */}
-        {/*  <Register /> */}
-        {/* </Route> */}
         <Route path={Routes.AUTHENTICATION.LOGIN} exact>
           <Login />
         </Route>
-        {/* <Route path={Routes.AUTHENTICATION.REGISTER} exact> */}
-        {/*  <Register /> */}
-        {/* </Route> */}
-        {/* <FantaleagueRouter /> */}
-        {/* <HomeRouter /> */}
-        <Route path={Routes.HOME}>
+        <Route path={Routes.HOME} exact>
           <Home />
         </Route>
-        {/* <Route exact path={Routes.REAL_WORLD.HOME}> */}
-        {/*  <div>Real World still in progress</div> */}
-        {/* </Route> */}
       </BrowserRouter>
-      {/* <ErrorManager /> */}
     </Page>
   );
 };
