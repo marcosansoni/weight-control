@@ -130,7 +130,7 @@ const WeightDetailsDialog = (props) => {
   }, []);
 
   const handleEdit = () => {
-    console.log('submit');
+    // console.log('submit');
   };
 
   const handleDelete = () => {

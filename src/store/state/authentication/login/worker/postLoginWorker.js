@@ -32,8 +32,6 @@ function* postLoginWorker(action) {
     })]));
   }
 
-  console.log(data);
-
   if (status === EndpointStatus.BAD_REQUEST) {
     return yield put(postLoginErrorActionCreator([new Error({
       message: data.errors?.[0],

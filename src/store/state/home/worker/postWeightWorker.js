@@ -25,8 +25,6 @@ function* postWeightWorker(action) {
     },
   });
 
-  console.log(response);
-
   const {
     data,
     status,
