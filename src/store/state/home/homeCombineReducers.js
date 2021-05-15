@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
-import homeErrorsReducer from './reducer/homeErrorsReducer';
+import homeNotificationReducer from './reducer/homeNotificationReducer';
 import weightByIdReducer from './reducer/weightByIdReducer';
 
 const homeCombineReducers = combineReducers({
-  errors: homeErrorsReducer,
+  notification: homeNotificationReducer,
   weightById: weightByIdReducer,
 });
 

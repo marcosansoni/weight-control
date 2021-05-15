@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {
@@ -8,7 +8,8 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  TextField, useMediaQuery,
+  TextField,
+  useMediaQuery,
 } from '@material-ui/core';
 import LoadingButton from '@material-ui/lab/LoadingButton';
 import { useTranslation } from 'react-i18next';
@@ -16,16 +17,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
-import { Color } from '../../theme/ColorSchema';
-import { useWeightById } from '../../store/state/home/selectors/weightByIdSelector';
-import deleteWeightActionCreator, { DELETE_WEIGHT } from '../../store/state/home/actionCreator/deleteWeightActionCreator';
-import { useFetchType } from '../../store/state/common/selectors/fetchSelector';
-import { useHomeError } from '../../store/state/home/selectors/homeErrorSelector';
-import deleteWeightErrorActionCreator
-  from '../../store/state/home/actionCreator/deleteWeightErrorActionCreator';
-import usePrevious from '../../utils/usePrevious';
-import MediaQuerySelector from '../../constants/responsive/MediaQuerySelector';
+import { Color } from '../../../theme/ColorSchema';
+import { useFetchType } from '../../../store/state/common/selectors/fetchSelector';
+import { POST_WEIGHT } from '../../../store/state/home/actionCreator/postWeightActionCreator';
+import MediaQuerySelector from '../../../constants/responsive/MediaQuerySelector';
 
 const StyledContent = styled(DialogContent)`
   padding: 16px 24px 0 !important;
@@ -36,7 +31,7 @@ const StyledDialog = styled(Dialog)`
     width: 450px;
     max-width: 100%;
 
-    ${MediaQuerySelector.SMALL}{
+    ${MediaQuerySelector.SMALL} {
       width: 100%;
       max-width: 100%;
     }
@@ -70,71 +65,45 @@ const ContainerInput = styled.div`
   width: 100%;
 `;
 
-const TertiaryButton = styled(LoadingButton)`
-  position: absolute !important;
-  top: 50%;
-  transform: translate(0, -50%);
-  left: 8px;
-`;
-
-const initialValues = (note, weight) => ({
-  note,
-  weight,
+const initialValues = (date) => ({
+  date,
+  note: undefined,
+  weight: undefined,
 });
 
 const validationSchema = (t) => Yup.object({
-  weight: Yup.number(t('home.rows.details.errors.weight.default'))
-    .required(t('home.rows.details.errors.weight.required')),
+  weight: Yup.number(t('home.rows.add.errors.weight.default'))
+    .required(t('home.rows.add.errors.weight.required')),
 });
 
-const WeightDetailsDialog = (props) => {
+const DateFormat = 'YYYY-MM-DD';
+
+const WeightAddDialog = (props) => {
   const {
-    id,
     onClose,
     open,
-    onOpenSnackbar,
-    onChangeSnackbarMessage,
+    defaultDate,
+    onPrimary,
   } = props;
+
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+  const fetching = useFetchType(POST_WEIGHT);
   const fullScreen = useMediaQuery(MediaQuerySelector.SMALL);
 
-  const weights = useWeightById();
-  const currentWeight = weights?.[id];
+  const validationSchemaFormik = useMemo(() => validationSchema(t), []);
+  const initialValuesFormik = useMemo(() => (
+    initialValues((defaultDate || moment()).format(DateFormat))),
+  [defaultDate]);
 
-  const fetching = useFetchType(DELETE_WEIGHT);
-
-  const date = useMemo(() => currentWeight?.date, [JSON.stringify(currentWeight)]);
-  const note = useMemo(() => currentWeight?.note, [JSON.stringify(currentWeight)]);
-  const weight = useMemo(() => currentWeight?.weight, [JSON.stringify(currentWeight)]);
-
-  const error = useHomeError();
-
-  const validationSchemaFormik = useMemo(() => validationSchema(t), [weight, note]);
-  const initialValuesFormik = useMemo(() => initialValues(note, weight), [weight, note]);
-
-  const prevFetching = usePrevious(fetching);
-
-  useEffect(() => {
-    if (!fetching && prevFetching !== undefined) {
-      onClose();
-      if (!error?.length) {
-        onOpenSnackbar();
-        onChangeSnackbarMessage('Weight successful deleted');
-      }
-    }
-  }, [fetching]);
-
-  useEffect(() => () => {
-    dispatch(deleteWeightErrorActionCreator([]));
-  }, []);
-
-  const handleEdit = () => {
-    // console.log('submit');
-  };
-
-  const handleDelete = () => {
-    dispatch(deleteWeightActionCreator(id));
+  const handleEdit = (formik) => {
+    const {
+      date,
+      weight,
+      note,
+    } = formik || {};
+    const dateFormatted = moment(date, DateFormat)
+      .format('DD/MM/YYYY');
+    onPrimary(dateFormatted, weight, note);
   };
 
   if (!open) return null;
@@ -148,7 +117,7 @@ const WeightDetailsDialog = (props) => {
       {(formik) => (
         <StyledDialog onClose={onClose} open={open} fullScreen={fullScreen}>
           <DialogTitle onClose={onClose}>
-            {t('home.rows.details.title')}
+            {t('home.rows.add.title')}
             {onClose ? (
               <StyledIconButton aria-label="close" onClick={onClose}>
                 <CloseIcon />
@@ -157,14 +126,21 @@ const WeightDetailsDialog = (props) => {
           </DialogTitle>
           <StyledContent dividers>
             <Row>
-              <Name>{t('home.rows.details.date')}</Name>
-              <div>
-                {moment(date)
-                  .format('DD/MM/YYYY')}
-              </div>
+              <Name>{t('home.rows.add.date')}</Name>
+              <ContainerInput>
+                <TextField
+                  type="date"
+                  fullWidth
+                  name="date"
+                  variant="outlined"
+                  value={formik.values.date}
+                  onChange={formik.handleChange}
+                  onBlur={() => formik.setFieldTouched('date')}
+                />
+              </ContainerInput>
             </Row>
             <Row>
-              <Name>{t('home.rows.details.note')}</Name>
+              <Name>{t('home.rows.add.note')}</Name>
               <ContainerInput>
                 <TextField
                   fullWidth
@@ -179,7 +155,7 @@ const WeightDetailsDialog = (props) => {
               </ContainerInput>
             </Row>
             <Row>
-              <Name>{t('home.rows.details.weight')}</Name>
+              <Name>{t('home.rows.add.weight')}</Name>
               <ContainerInput style={{ height: 92 }}>
                 <TextField
                   type="number"
@@ -200,26 +176,18 @@ const WeightDetailsDialog = (props) => {
             position: 'relative',
           }}
           >
-            <TertiaryButton
-              variant="contained"
-              color="secondary"
-              onClick={handleDelete}
-              pending={fetching}
-            >
-              {t('home.rows.details.tertiary')}
-            </TertiaryButton>
             <Button
               onClick={onClose}
             >
-              {t('home.rows.details.secondary')}
+              {t('home.rows.add.secondary')}
             </Button>
             <LoadingButton
-              pending={false}
+              pending={fetching}
               variant="contained"
               color="primary"
               onClick={formik.handleSubmit}
             >
-              {t('home.rows.details.primary')}
+              {t('home.rows.add.primary')}
             </LoadingButton>
           </DialogActions>
         </StyledDialog>
@@ -228,20 +196,18 @@ const WeightDetailsDialog = (props) => {
   );
 };
 
-WeightDetailsDialog.propTypes = {
-  id: PropTypes.number,
+WeightAddDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
-  onOpenSnackbar: PropTypes.func,
-  onChangeSnackbarMessage: PropTypes.func,
+  onPrimary: PropTypes.func,
+  defaultDate: PropTypes.any,
 };
 
-WeightDetailsDialog.defaultProps = {
-  id: undefined,
+WeightAddDialog.defaultProps = {
   open: undefined,
   onClose: undefined,
-  onOpenSnackbar: undefined,
-  onChangeSnackbarMessage: undefined,
+  onPrimary: undefined,
+  defaultDate: undefined,
 };
 
-export default WeightDetailsDialog;
+export default WeightAddDialog;

@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { Color } from '../../theme/ColorSchema';
-import MediaQuerySelector from '../../constants/responsive/MediaQuerySelector';
+import { Color } from '../../../theme/ColorSchema';
+import MediaQuerySelector from '../../../constants/responsive/MediaQuerySelector';
 
 const Container = styled.div`
   background-color: ${(p) => p.theme[Color.BACKGROUND]};

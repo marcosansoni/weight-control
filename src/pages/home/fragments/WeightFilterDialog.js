@@ -15,8 +15,8 @@ import LoadingButton from '@material-ui/lab/LoadingButton';
 import { useTranslation } from 'react-i18next';
 import CloseIcon from '@material-ui/icons/Close';
 import moment from 'moment';
-import { Color } from '../../theme/ColorSchema';
-import MediaQuerySelector from '../../constants/responsive/MediaQuerySelector';
+import { Color } from '../../../theme/ColorSchema';
+import MediaQuerySelector from '../../../constants/responsive/MediaQuerySelector';
 
 const StyledContent = styled(DialogContent)`
   padding: 16px 24px 0 !important;
@@ -37,7 +37,6 @@ const StyledDialog = styled(Dialog)`
 const Row = styled.div`
   display: flex;
   padding-bottom: 16px;
-  //align-items: baseline;
 
   :last-child {
     padding-bottom: 0;
@@ -180,8 +179,6 @@ const WeightFilterDialog = (props) => {
         </LoadingButton>
       </DialogActions>
     </StyledDialog>
-    //   )}
-    // </Formik>
   );
 };
 

@@ -1,13 +1,14 @@
 import { put } from 'redux-saga/effects';
+import i18n from 'i18next';
 import Endpoint, { urlFactory } from '../../../constants/Endpoint';
 import EndpointStatus from '../../../constants/EndpointStatus';
 import LoginErrorCode from '../constants/LoginErrorCode';
 import ErrorCode from '../../../constants/ErrorCode';
-import Error from '../../../../entities/Error';
 import getWeightSubWorker from './subworker/getWeightSubWorker';
 import deleteWeightErrorActionCreator from '../actionCreator/deleteWeightErrorActionCreator';
 import deleteData from '../../../utils/fetchMethod/deleteData';
 import deleteWeightSuccessActionCreator from '../actionCreator/deleteWeightSuccessActionCreator';
+import Notification from '../../../../entities/Notification';
 
 function* deleteWeightWorker(action) {
   const { id } = action.payload || {};
@@ -22,14 +23,14 @@ function* deleteWeightWorker(action) {
   } = response || {};
 
   if (status === EndpointStatus.NOT_FOUND) {
-    return yield put(deleteWeightErrorActionCreator([new Error({
-      message: 'Weights not found',
+    return yield put(deleteWeightErrorActionCreator([new Notification({
+      message: i18n.t('home.snackbar.notFound'),
       code: LoginErrorCode.NOT_FOUND,
     })]));
   }
 
   if (status === EndpointStatus.BAD_REQUEST) {
-    return yield put(deleteWeightErrorActionCreator([new Error({
+    return yield put(deleteWeightErrorActionCreator([new Notification({
       message: data.errors?.[0],
       code: LoginErrorCode.NOT_FOUND,
     })]));
@@ -43,13 +44,14 @@ function* deleteWeightWorker(action) {
     if (errors) {
       return yield put(deleteWeightErrorActionCreator(errors));
     }
-    return yield put(deleteWeightSuccessActionCreator(result?.weightById));
+
+    const notifications = [new Notification({ message: i18n.t('home.snackbar.deleteSuccess') })];
+
+    return yield put(deleteWeightSuccessActionCreator(result?.weightById, notifications));
   }
 
   // Generic errorCode
-  return yield put(deleteWeightErrorActionCreator([new Error({
-    code: ErrorCode.DEFAULT,
-  })]));
+  return yield put(deleteWeightErrorActionCreator([new Notification({ code: ErrorCode.DEFAULT })]));
 }
 
 export default deleteWeightWorker;

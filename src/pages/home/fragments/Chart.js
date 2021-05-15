@@ -11,8 +11,10 @@ import React from 'react';
 import styled, { useTheme } from 'styled-components';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { Color } from '../../theme/ColorSchema';
-import useOrderedWeights from '../useOrderedWeights';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { Color } from '../../../theme/ColorSchema';
+import rangeWeightSelector from '../../../store/state/home/selectors/rangeWeightSelector';
 
 const TooltipContainer = styled.div`
   border-radius: 4px;
@@ -54,14 +56,10 @@ const Chart = (props) => {
     showLabel,
   } = props;
   const theme = useTheme();
-  const orderedWeights = useOrderedWeights();
-  const data = orderedWeights.reverse()
-    .filter((w) => (
-      moment(w.date)
-        .diff(startDate, 'days') >= 0
-      && moment(w.date)
-        .diff(endDate, 'days') <= 0
-    ))
+  const { t } = useTranslation();
+  const filteredWeights = useSelector(rangeWeightSelector(startDate, endDate));
+
+  const chartData = filteredWeights.reverse()
     .map((w) => (
       {
         name: moment(w.date)
@@ -75,9 +73,15 @@ const Chart = (props) => {
     x,
     y,
     value,
+    index,
   }) => (
     <g>
-      <foreignObject x={x + 8} y={y} width={48} height={32}>
+      <foreignObject
+        x={index === chartData.length - 1 ? x - 42 : x + 8}
+        y={y}
+        width={48}
+        height={32}
+      >
         <Label>
           {Number(value)
             .toFixed(1)}
@@ -90,7 +94,7 @@ const Chart = (props) => {
     <Container>
       <ResponsiveContainer>
         <LineChart
-          data={data}
+          data={chartData}
           margin={{
             top: 20,
             right: 30,
@@ -107,7 +111,7 @@ const Chart = (props) => {
             interval={0}
             tickMargin={10}
             label={{
-              value: 'Weight',
+              value: t('home.weights'),
               angle: -90,
               position: 'insideLeft',
             }}

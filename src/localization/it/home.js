@@ -3,6 +3,7 @@ export default {
   noWeightToday: 'Non hai ancora aggiunto il tuo peso di oggi.',
   weightToday: 'Hai aggiunto il tuo peso oggi, continua così!',
   addTodayWeight: 'Fallo subito!',
+  weights: 'Pesi',
   rows: {
     noteUnavailable: 'Nessuna nota disponibile',
     details: {
@@ -44,5 +45,11 @@ export default {
     graphOptions: 'Filtri sul grafico',
     descriptionDate: 'Filtrato da {{start}} a {{end}}',
     descriptionLabel: 'con etichette',
+    allFilters: 'Tutti i filtri',
+  },
+  snackbar: {
+    deleteSuccess: 'Peso cancellato con successo',
+    postSuccess: 'Peso creato con successo',
+    notFound: 'Peso non trovato',
   },
 };

@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { Color } from '../../theme/ColorSchema';
-import Title from '../../components/Title';
+import { Color } from '../../../theme/ColorSchema';
+import Title from '../../../components/Title';
 import WeightFilterDialog from './WeightFilterDialog';
 
 const Container = styled.div`
@@ -48,7 +48,7 @@ const WeightFilter = (props) => {
         onClose={() => setOpenFilterDialog(false)}
       />
       <Title
-        title="Weights"
+        title={t('home.weights')}
         subtitle={(
           <Subtitle>
             {t('home.filters.descriptionDate', {
@@ -56,7 +56,7 @@ const WeightFilter = (props) => {
               end: endDate.format('DD/MM/YYYY'),
             })}
             {showLabel ? `, ${t('home.filters.descriptionLabel')}. ` : '. '}
-            <More onClick={() => setOpenFilterDialog(true)}>More filter</More>
+            <More onClick={() => setOpenFilterDialog(true)}>{t('home.filters.allFilters')}</More>
           </Subtitle>
         )}
       />

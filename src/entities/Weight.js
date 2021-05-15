@@ -1,4 +1,4 @@
-class User {
+class Weight {
   constructor(params) {
     this.date = params?.date;
     this.id = params?.id;
@@ -8,4 +8,4 @@ class User {
   }
 }
 
-export default User;
+export default Weight;

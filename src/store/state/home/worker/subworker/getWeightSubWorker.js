@@ -1,10 +1,11 @@
+import i18n from 'i18next';
 import getData from '../../../../utils/fetchMethod/getData';
 import Endpoint, { urlFactory } from '../../../../constants/Endpoint';
 import EndpointStatus from '../../../../constants/EndpointStatus';
-import Error from '../../../../../entities/Error';
 import LoginErrorCode from '../../constants/LoginErrorCode';
 import Weight from '../../../../../entities/Weight';
 import ErrorCode from '../../../../constants/ErrorCode';
+import Notification from '../../../../../entities/Notification';
 
 function* getWeightSubWorker() {
   const response = yield getData({
@@ -19,8 +20,8 @@ function* getWeightSubWorker() {
   if (status === EndpointStatus.NOT_FOUND) {
     return {
       errors:
-        [new Error({
-          message: 'Weights not found',
+        [new Notification({
+          message: i18n.t('home.snackbar.notFound'),
           code: LoginErrorCode.NOT_FOUND,
         })],
     };
@@ -29,7 +30,7 @@ function* getWeightSubWorker() {
   if (status === EndpointStatus.BAD_REQUEST) {
     return {
       errors:
-        [new Error({
+        [new Notification({
           message: data.errors?.[0],
           code: LoginErrorCode.NOT_FOUND,
         })],
@@ -45,7 +46,7 @@ function* getWeightSubWorker() {
   }
 
   // Generic errorCode
-  return { errors: [new Error({ code: ErrorCode.DEFAULT })] };
+  return { errors: [new Notification({ code: ErrorCode.DEFAULT })] };
 }
 
 export default getWeightSubWorker;

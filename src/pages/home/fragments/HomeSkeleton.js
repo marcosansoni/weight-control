@@ -1,6 +1,6 @@
 import { Skeleton } from '@material-ui/core';
 import styled from 'styled-components';
-import MediaQuerySelector from '../../constants/responsive/MediaQuerySelector';
+import MediaQuerySelector from '../../../constants/responsive/MediaQuerySelector';
 
 const Container = styled.div`
   display: flex;

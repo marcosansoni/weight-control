@@ -1,33 +1,31 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import styled from 'styled-components';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import React, {
-  useEffect, useLayoutEffect, useMemo, useState,
-} from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useLayoutEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { Slide, Snackbar } from '@material-ui/core';
-import Title from '../components/Title';
-import { Color } from '../theme/ColorSchema';
-import Card from '../components/Card';
-import CalendarIcon from '../assets/icons/CalendarIcon';
-import WeightFilter from './home/WeightFilter';
-import Chart from './home/Chart';
-import WeightRow from './home/WeightRow';
-import WeightDetailsDialog from './home/WeightDetailsDialog';
-import WeightAddDialog from './home/WeightAddDialog';
-import getHomeActionCreator, { GET_HOME } from '../store/state/home/actionCreator/getHomeActionCreator';
-import useOrderedWeights from './useOrderedWeights';
-import Header from '../components/Header';
-import postWeightActionCreator from '../store/state/home/actionCreator/postWeightActionCreator';
-import postWeightErrorActionCreator
-  from '../store/state/home/actionCreator/postWeightErrorActionCreator';
-import { useHomeError } from '../store/state/home/selectors/homeErrorSelector';
-import PlusIcon from '../assets/icons/PlusIcon';
-import MediaQuerySelector from '../constants/responsive/MediaQuerySelector';
-import { useFetchType } from '../store/state/common/selectors/fetchSelector';
-import HomeSkeleton from './home/HomeSkeleton';
+import Title from '../../components/Title';
+import { Color } from '../../theme/ColorSchema';
+import Card from '../../components/Card';
+import CalendarIcon from '../../assets/icons/CalendarIcon';
+import WeightFilter from './fragments/WeightFilter';
+import Chart from './fragments/Chart';
+import WeightRow from './fragments/WeightRow';
+import WeightDetailsDialog from './fragments/WeightDetailsDialog';
+import WeightAddDialog from './fragments/WeightAddDialog';
+import getHomeActionCreator, { GET_HOME } from '../../store/state/home/actionCreator/getHomeActionCreator';
+import Header from '../../components/Header';
+import postWeightActionCreator from '../../store/state/home/actionCreator/postWeightActionCreator';
+import { useHomeNotification } from '../../store/state/home/selectors/homeNotificationSelector';
+import PlusIcon from '../../assets/icons/PlusIcon';
+import MediaQuerySelector from '../../constants/responsive/MediaQuerySelector';
+import { useFetchType } from '../../store/state/common/selectors/fetchSelector';
+import HomeSkeleton from './fragments/HomeSkeleton';
+import resetHomeErrorActionCreator
+  from '../../store/state/home/actionCreator/resetHomeErrorActionCreator';
+import useSnackbar from '../../utils/useSnackbar';
+import dailyWeightSelector from '../../store/state/home/selectors/dailyWeightSelector';
+import sortedWeightSelector from '../../store/state/home/selectors/sortedWeightSelector';
 
 const Container = styled.div`
   background-color: ${(p) => p.theme[Color.BACKGROUND]};
@@ -51,7 +49,7 @@ const Left = styled.div`
   flex-direction: column;
   height: 100%;
 
-  ${MediaQuerySelector.MEDIUM_AND_SMALL}{
+  ${MediaQuerySelector.MEDIUM_AND_SMALL} {
     display: none;
   }
 `;
@@ -64,7 +62,7 @@ const Right = styled.div`
   height: 100%;
   overflow: auto;
 
-  ${MediaQuerySelector.MEDIUM_AND_SMALL}{
+  ${MediaQuerySelector.MEDIUM_AND_SMALL} {
     width: 100%;
     padding-left: 0;
   }
@@ -72,14 +70,14 @@ const Right = styled.div`
 
 const MobileTitle = styled.div`
   display: none;
-  
-  ${MediaQuerySelector.MEDIUM_AND_SMALL}{
-   display: block;
+
+  ${MediaQuerySelector.MEDIUM_AND_SMALL} {
+    display: block;
   }
 `;
 
 const ContainerWeightFilterDesktop = styled.div`
-  ${MediaQuerySelector.MEDIUM_AND_SMALL}{
+  ${MediaQuerySelector.MEDIUM_AND_SMALL} {
     display: none;
   }
 `;
@@ -104,59 +102,38 @@ const ContainerIcon = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 20px;
-  
-  :hover{
+
+  :hover {
     background-color: ${(p) => p.theme[Color.BORDER]};
   }
 `;
 
 const Home = () => {
   const dispatch = useDispatch();
-  const orderedWeight = useOrderedWeights();
+  const orderedWeight = useSelector(sortedWeightSelector);
+  const todayWeight = useSelector(dailyWeightSelector(moment()));
   const { t } = useTranslation();
-  const homeError = useHomeError();
+  const notification = useHomeNotification();
 
   const [openedAdd, setOpenedAdd] = useState(false);
 
   const [openedDetails, setOpenedDetails] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
 
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState(false);
+  const [defaultDate, setDefaultDate] = useState(null);
 
-  const [defaultDate, setDefaultDate] = useState();
-
-  const [startDateFilter, setStartDateFilter] = useState(moment().subtract(1, 'week'));
+  const [startDateFilter, setStartDateFilter] = useState(moment()
+    .subtract(1, 'week'));
   const [endDateFilter, setEndDateFilter] = useState(moment());
   const [showLabel, setShowLabel] = useState(true);
 
   const fetching = useFetchType(GET_HOME);
 
-  const todayWeight = useMemo(() => (
-    orderedWeight.find((w) => moment()
-      .diff(moment(w.date), 'day') === 0)?.weight),
-  [JSON.stringify(orderedWeight)]);
-
-  const lastWeekWeight = useMemo(() => (
-    orderedWeight.find((w) => moment()
-      .diff(moment(w.date), 'day') === 7)?.weight),
-  [JSON.stringify(orderedWeight)]);
-
-  useEffect(() => {
-    if (homeError?.length) {
-      setSnackbarOpen(true);
-      setOpenedAdd(false);
-      setSnackbarMessage(homeError[0]?.message);
-    }
-  }, [homeError]);
+  const handleOpenSnackbar = () => setOpenedAdd(false);
+  const renderSnackbar = useSnackbar(notification, resetHomeErrorActionCreator, handleOpenSnackbar);
 
   useLayoutEffect(() => {
     dispatch(getHomeActionCreator());
-  }, []);
-
-  useEffect(() => () => {
-    dispatch(postWeightErrorActionCreator([]));
-    setDefaultDate(null);
   }, []);
 
   const renderAddWeightWelcome = () => (
@@ -171,11 +148,6 @@ const Home = () => {
     setDefaultDate(null);
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-    dispatch(postWeightErrorActionCreator([]));
-  };
-
   const handleOpenDetails = (id) => {
     setSelectedId(id);
     setOpenedDetails(true);
@@ -187,7 +159,8 @@ const Home = () => {
   };
 
   const handleOpenAddNextWeek = () => {
-    setDefaultDate(moment().subtract(1, 'week'));
+    setDefaultDate(moment()
+      .subtract(1, 'week'));
     setOpenedAdd(true);
   };
 
@@ -197,22 +170,10 @@ const Home = () => {
 
   return (
     <Container>
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        open={snackbarOpen}
-        onClose={() => handleSnackbarClose()}
-        TransitionComponent={(p) => (<Slide {...p} direction="up" />)}
-        message={snackbarMessage}
-        autoHideDuration={3000}
-      />
+      {renderSnackbar()}
       <WeightDetailsDialog
         open={openedDetails}
         onClose={() => setOpenedDetails(false)}
-        onOpenSnackbar={() => setSnackbarOpen(true)}
-        onChangeSnackbarMessage={setSnackbarMessage}
         id={selectedId}
       />
       <WeightAddDialog
@@ -220,8 +181,6 @@ const Home = () => {
         open={openedAdd}
         onClose={handleCloseAdd}
         onPrimary={(date, weight, note) => handleAddWeight(date, weight, note)}
-        onOpenSnackbar={() => setSnackbarOpen(true)}
-        onChangeSnackbarMessage={setSnackbarMessage}
       />
       <Header />
       <div style={{ height: 48 }} />
@@ -242,13 +201,13 @@ const Home = () => {
         />
         <Card
           title="Last week"
-          value={lastWeekWeight}
+          // value={lastWeekWeight}
           icon={(<CalendarIcon />)}
           placeholder={(
             <ContainerIcon onClick={handleOpenAddNextWeek}>
               <PlusIcon size={16} />
             </ContainerIcon>
-              )}
+          )}
         />
       </CardContainer>
       <ContainerWeightFilterDesktop>
@@ -277,13 +236,17 @@ const Home = () => {
           <PerfectScrollbar>
             {orderedWeight
               .filter((w) => (
-                moment(w.date).diff(startDateFilter, 'days') >= 0
-                && moment(w.date).diff(endDateFilter, 'days') <= 0
+                moment(w.date)
+                  .diff(startDateFilter, 'days') >= 0
+                && moment(w.date)
+                  .diff(endDateFilter, 'days') <= 0
               ))
               .map((w) => (
                 <WeightRow
-                  date={moment(w.date).format('DD/MM/YYYY')}
-                  value={Number(w.weight).toFixed(1)}
+                  date={moment(w.date)
+                    .format('DD/MM/YYYY')}
+                  value={Number(w.weight)
+                    .toFixed(1)}
                   key={w.id}
                   note={w.note}
                   onClick={() => handleOpenDetails(w.id)}

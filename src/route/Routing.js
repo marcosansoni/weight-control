@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Routes from './Routes';
 import { useSession } from '../store/state/common/selectors/sessionSelector';
 import Login from '../pages/Login';
-import Home from '../pages/Home';
+import Home from '../pages/home/Home';
 
 const Page = styled.div`
   width: 100vw;

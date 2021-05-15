@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { Color } from '../theme/ColorSchema';
 import LogoutIcon from '../assets/icons/LogoutIcon';
 import logoutActionCreator
   from '../store/state/authentication/logout/actionCreator/logoutActionCreator';
+import logo from '../assets/images/logo.png';
+import MediaQuerySelector from '../constants/responsive/MediaQuerySelector';
 
 const Container = styled.div`
   position: absolute;
@@ -16,16 +17,8 @@ const Container = styled.div`
   height: 56px;
 `;
 
-const Logo = styled.div`
-  font-weight: 700;
-  font-size: 24px;
-  background-color: ${(p) => p.theme[Color.TEXT_DARK]};
-  width: fit-content;
-  color: ${(p) => p.theme[Color.BACKGROUND]};
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-`;
+// const Logo = styled.div`
+// `;
 
 const Right = styled.div`
   display: flex;
@@ -36,6 +29,16 @@ const ContainerIcon = styled.div`
   cursor: pointer;
 `;
 
+const Image = styled.img`
+  height: 48px;
+  width: 48px;
+  
+  ${MediaQuerySelector.SMALL}{
+    height: 38px;
+    width: 38px;
+  }
+`;
+
 const Header = () => {
   const dispatch = useDispatch();
 
@@ -43,9 +46,10 @@ const Header = () => {
 
   return (
     <Container>
-      <Logo>
-        Weight Control
-      </Logo>
+      {/* <Logo> */}
+      <Image src={logo} alt="logo" />
+      {/*  <div>Weight Control</div> */}
+      {/* </Logo> */}
       <Right>
         <ContainerIcon onClick={handleLogout}>
           <LogoutIcon size={24} />
