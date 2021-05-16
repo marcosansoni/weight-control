@@ -11,7 +11,7 @@ const Container = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  width: 100%;
+  width: calc(100% - 16px);
   cursor: pointer;
   
   :hover{
@@ -62,7 +62,7 @@ const Side = styled.div`
 const Separator = styled.div`
   height: 2px;
   border-radius: 8px;
-  width: 100%;
+  width: calc(100% - 16px);
   background-color: ${(p) => p.theme[Color.TEXT_LIGHT]};
 `;
 

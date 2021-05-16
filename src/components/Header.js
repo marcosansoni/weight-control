@@ -17,9 +17,6 @@ const Container = styled.div`
   height: 56px;
 `;
 
-// const Logo = styled.div`
-// `;
-
 const Right = styled.div`
   display: flex;
   align-items: center;
@@ -27,15 +24,17 @@ const Right = styled.div`
 
 const ContainerIcon = styled.div`
   cursor: pointer;
+  display: flex;
+  align-items: center;
 `;
 
 const Image = styled.img`
-  height: 48px;
-  width: 48px;
+  height: 44px;
+  width: 44px;
   
   ${MediaQuerySelector.SMALL}{
-    height: 38px;
-    width: 38px;
+    height: 32px;
+    width: 32px;
   }
 `;
 
@@ -46,10 +45,7 @@ const Header = () => {
 
   return (
     <Container>
-      {/* <Logo> */}
       <Image src={logo} alt="logo" />
-      {/*  <div>Weight Control</div> */}
-      {/* </Logo> */}
       <Right>
         <ContainerIcon onClick={handleLogout}>
           <LogoutIcon size={24} />

@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import React, { useLayoutEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -10,7 +9,6 @@ import Card from '../../components/Card';
 import CalendarIcon from '../../assets/icons/CalendarIcon';
 import WeightFilter from './fragments/WeightFilter';
 import Chart from './fragments/Chart';
-import WeightRow from './fragments/WeightRow';
 import WeightDetailsDialog from './fragments/WeightDetailsDialog';
 import WeightAddDialog from './fragments/WeightAddDialog';
 import getHomeActionCreator, { GET_HOME } from '../../store/state/home/actionCreator/getHomeActionCreator';
@@ -25,7 +23,7 @@ import resetHomeErrorActionCreator
   from '../../store/state/home/actionCreator/resetHomeErrorActionCreator';
 import useSnackbar from '../../utils/useSnackbar';
 import dailyWeightSelector from '../../store/state/home/selectors/dailyWeightSelector';
-import sortedWeightSelector from '../../store/state/home/selectors/sortedWeightSelector';
+import WeightList from './fragments/WeightList';
 
 const Container = styled.div`
   background-color: ${(p) => p.theme[Color.BACKGROUND]};
@@ -110,8 +108,9 @@ const ContainerIcon = styled.div`
 
 const Home = () => {
   const dispatch = useDispatch();
-  const orderedWeight = useSelector(sortedWeightSelector);
   const todayWeight = useSelector(dailyWeightSelector(moment()));
+  const lastWeekWeight = useSelector(dailyWeightSelector(moment()
+    .subtract(7, 'days')));
   const { t } = useTranslation();
   const notification = useHomeNotification();
 
@@ -201,7 +200,7 @@ const Home = () => {
         />
         <Card
           title="Last week"
-          // value={lastWeekWeight}
+          value={lastWeekWeight}
           icon={(<CalendarIcon />)}
           placeholder={(
             <ContainerIcon onClick={handleOpenAddNextWeek}>
@@ -231,28 +230,15 @@ const Home = () => {
               onChangeStartDate={setStartDateFilter}
               endDate={endDateFilter}
               onChangeEndDate={setEndDateFilter}
+              showLabel={showLabel}
+              onChangeLabelVisibility={setShowLabel}
             />
           </MobileTitle>
-          <PerfectScrollbar>
-            {orderedWeight
-              .filter((w) => (
-                moment(w.date)
-                  .diff(startDateFilter, 'days') >= 0
-                && moment(w.date)
-                  .diff(endDateFilter, 'days') <= 0
-              ))
-              .map((w) => (
-                <WeightRow
-                  date={moment(w.date)
-                    .format('DD/MM/YYYY')}
-                  value={Number(w.weight)
-                    .toFixed(1)}
-                  key={w.id}
-                  note={w.note}
-                  onClick={() => handleOpenDetails(w.id)}
-                />
-              ))}
-          </PerfectScrollbar>
+          <WeightList
+            onClick={handleOpenDetails}
+            endDate={endDateFilter}
+            startDate={startDateFilter}
+          />
         </Right>
       </WeightContainer>
     </Container>
