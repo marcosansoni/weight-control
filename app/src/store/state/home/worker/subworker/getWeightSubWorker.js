@@ -31,7 +31,7 @@ function* getWeightSubWorker() {
     return {
       errors:
         [new Notification({
-          message: data.errors?.[0],
+          message: data.errors?.[0]?.description,
           code: LoginErrorCode.NOT_FOUND,
         })],
     };
