@@ -1,5 +1,5 @@
 <a href="https://weight-control.netlify.com"><p align="center">
-<img height=100 src="https://raw.githubusercontent.com/marcosansoni/weight-control/main/public/logo192.png"/>
+<img height=100 src="https://raw.githubusercontent.com/marcosansoni/weight-control/main/app/public/logo192.png"/>
 </p>
 
 <p align="center">Weight Control</p>
